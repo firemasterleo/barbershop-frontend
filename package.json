@@ -1,0 +1,34 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/image": "^1.10.0",
+    "@pinia/nuxt": "^0.10.1",
+    "@supabase/supabase-js": "^2.49.4",
+    "@vuepic/vue-datepicker": "^11.0.2",
+    "@vueuse/motion": "^3.0.3",
+    "axios": "^1.8.3",
+    "chart.js": "^4.4.9",
+    "gsap": "^3.12.7",
+    "lenis": "^1.2.3",
+    "localforage": "^1.10.0",
+    "nuxt": "^3.16.1",
+    "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
+    "vue": "latest",
+    "vue-chartjs": "^5.3.2",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "sass": "^1.86.0",
+    "sass-embedded": "^1.86.0"
+  }
+}

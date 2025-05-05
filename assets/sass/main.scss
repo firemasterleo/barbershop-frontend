@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import "@/assets/sass/variables"; // Import variables
+
+
+* {
+    // width: fit-content;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+    box-sizing: border-box;
+    font-family: "Poppins", serif;
+    // overflow-y: scroll;
+    // width: 100vw;
+    // width: calc(100vw - 110rem);    
+}
+:root {
+  // width: 100%;
+  background-color: #ffffff !important; /* Solid black background */
+  // height: 90vh;
+  // overflow-y: hidden;
+  // border: solid red;
+  // overflow-y: scroll;
+
+  // font-size: 100px;
+  // background-color: #004c80; /* Solid black background */
+    // color: black;
+    // overflow-x: hidden; //clip better than hidden, hidden broke the header ishidingheader
+    // scroll-behavior: unset !important;
+    
+
+}
+// html {
+//   background-color: $bg-white !important;
+//   height: 100%;
+// }
+
+::-webkit-scrollbar {
+
+  display: none; 
+
+
+}
+
+body.no-scroll {
+  overflow: hidden !important;
+  height: 100vh;
+  // border: solid red;
+  touch-action: none; /* Prevents touch scrolling */
+
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+  
+}
+
+.fade-enter-from {
+  opacity: 0;
+}
+
+.fade-enter-to {
+  opacity: 1;
+}
+
+.fade-leave-from {
+  opacity: 1;
+}
+
+.fade-leave-to {
+  opacity: 0;
+}
+
+
+html, body {
+  background-color: #f5f5f5; /* Match your site's theme */
+}
