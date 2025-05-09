@@ -31,10 +31,10 @@ import { useToggle } from '~/composables/useToggle';
 const { isMenuOpen, closeMenu } = useToggle();
 
 const menuItems = [
-  { label: 'Log Visits', path: '/' },
-  { label: 'Barbers ', path: '/Barbers' },
-  { label: 'Services', path: '/' },
-  { label: 'Stats & Insights', path: '/' },
+  { label: 'Dashboard (Admin)', path: '/' },
+  { label: 'Barbers Stats ', path: '/' },
+  { label: 'Services Stats', path: '/' },
+  { label: 'Trends', path: '/' },
 
 
 ];

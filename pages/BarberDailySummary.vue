@@ -1,6 +1,6 @@
 <template>
     <div class="barbers">
-      <h1 class="barbers__title">My Daily Summary</h1>
+      <h1 class="barbers__title">M Daily Summary</h1>
       
       <!-- Date Selector -->
       <div class="date-selector">
@@ -404,7 +404,7 @@
   };
   </script>
   
-  <style lang="scss">
+  <style lang="scss" scoped>
   .barbers {
     max-width: 1200px;
     margin: 0 auto;

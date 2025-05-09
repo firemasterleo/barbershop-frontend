@@ -53,13 +53,13 @@
       
       <!-- Main Chart -->
       <div class="chart-wrapper">
-        <h2 class="chart-wrapper__title">Daily Revenue (₦)</h2>
+        <h2 class="chart-wrapper__title">Revenue Chart (₦)</h2>
         <RevenueChart :chartData="chartData" />
       </div>
       
       <!-- Data Table -->
       <div class="data-table-wrapper">
-        <h2 class="data-table-wrapper__title">Daily Summary</h2>
+        <h2 class="data-table-wrapper__title">Summary (Visits)</h2>
         <DataTable :data="chartData" />
       </div>
     </div>
@@ -324,10 +324,10 @@ onMounted(() => {
   // Set default range to include the last 3 days
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const threeDaysAgo = new Date(today);
-  threeDaysAgo.setDate(today.getDate() - 2); // Includes today plus 2 previous days
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days (including today)
   
-  dateRange.value = [threeDaysAgo, today];
+  dateRange.value = [sevenDaysAgo, today];
   activeOption.value = "Last 7 Days"; // Or change to "Last 3 Days" if you add that option
 });
 </script>
