@@ -1,13 +1,13 @@
- <!-- components/RevenueChart.vue -->
- <template>
+<!-- components/RevenueChart.vue -->
+<template>
   <div class="revenue-chart">
     <div v-if="chartData.length === 0" class="revenue-chart__empty">
       <p>No data available for the selected date range</p>
     </div>
     <div v-else class="revenue-chart__container">
-      <Line 
-        :data="chartDataConfig" 
-        :options="chartOptions" 
+      <Bar 
+        :data="chartDataConfig"
+        :options="chartOptions"
         height="300"
       />
     </div>
@@ -16,29 +16,25 @@
 
 <script setup>
 import { defineProps, computed } from 'vue';
-import { Line } from 'vue-chartjs';
-import { 
-  Chart as ChartJS, 
-  Title, 
-  Tooltip, 
-  Legend, 
-  LineElement, 
-  CategoryScale, 
-  LinearScale, 
-  PointElement,
-  Filler
+import { Bar } from 'vue-chartjs';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
 } from 'chart.js';
 
 // Register Chart.js components
 ChartJS.register(
-  Title, 
-  Tooltip, 
-  Legend, 
-  LineElement, 
-  CategoryScale, 
-  LinearScale, 
-  PointElement,
-  Filler
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
 );
 
 const props = defineProps({
@@ -51,9 +47,9 @@ const props = defineProps({
 // Format date for display
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-NG', { 
-    month: 'short', 
-    day: 'numeric' 
+  return new Intl.DateTimeFormat('en-NG', {
+    month: 'short',
+    day: 'numeric'
   }).format(date);
 };
 
@@ -65,16 +61,11 @@ const chartDataConfig = computed(() => {
       {
         label: 'Revenue',
         data: props.chartData.map(item => item.total_revenue),
+        backgroundColor: 'rgba(52, 73, 94, 0.7)',
         borderColor: '#34495e',
-        backgroundColor: 'rgba(52, 73, 94, 0.1)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.3,
-        pointBackgroundColor: '#34495e',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 1,
-        pointRadius: 3,
-        pointHoverRadius: 5
+        borderWidth: 1,
+        borderRadius: 4,
+        hoverBackgroundColor: 'rgba(52, 73, 94, 0.9)'
       }
     ]
   };

@@ -46,21 +46,30 @@
     <div v-else>
       <!-- Summary Cards -->
       <div class="summary-cards">
-        <SummaryCard title="Total Revenue" :value="formattedRevenue" icon="currency-naira" />
         <SummaryCard title="Total Visits" :value="totalVisits.toString()" icon="users" />
-        <SummaryCard title="Average per Visit" :value="formattedAverage" icon="user" />
+        <SummaryCard title="Total Revenue" :value="formattedRevenue" icon="currency-naira" />
       </div>
       
-      <!-- Main Chart -->
-      <div class="chart-wrapper">
-        <h2 class="chart-wrapper__title">Revenue Chart (₦)</h2>
-        <RevenueChart :chartData="chartData" />
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <!-- Revenue Chart -->
+        <div class="chart-wrapper revenue-chart-wrapper">
+          <h2 class="chart-wrapper__title">Revenue Chart (₦)</h2>
+          <RevenueChart :chartData="chartData" />
+        </div>
+        
+        <!-- Barber Performance Chart -->
+        <div class="chart-wrapper barber-chart-wrapper">
+          <h2 class="chart-wrapper__title">Barber Performance</h2>
+          <BarberPerformanceChart :chartData="barberPerformanceData" />
+        </div>
       </div>
       
       <!-- Data Table -->
       <div class="data-table-wrapper">
-        <h2 class="data-table-wrapper__title">Summary (Visits)</h2>
-        <DataTable :data="chartData" />
+        <h2 class="data-table-wrapper__title">
+  Summary Log ({{ formatDisplayDate(dateRange[0]) }} - {{ formatDisplayDate(dateRange[1]) }})
+</h2>        <DataTable :data="chartData" />
       </div>
     </div>
   </div>
@@ -74,6 +83,7 @@ import { supabase } from '../utils/supabaseClient';
 import RevenueChart from '../components/RevenueChart.vue';
 import SummaryCard from '../components/SummaryCard.vue';
 import DataTable from '../components/DataTable.vue';
+import BarberPerformanceChart from '../components/BarberPerformanceChart.vue';
 
 // Date range options
 const dateOptions = [
@@ -89,6 +99,7 @@ const activeOption = ref('Last 7 Days');
 const showCustomDatePicker = ref(false);
 const dateRange = ref([]);
 const chartData = ref([]);
+const barberPerformanceData = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
 
@@ -170,7 +181,7 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
-// Fetch data from Supabase
+// Fetch revenue data from Supabase
 const fetchDataFromSupabase = async (startDate, endDate) => {
   isLoading.value = true;
   error.value = null;
@@ -213,6 +224,76 @@ const fetchDataFromSupabase = async (startDate, endDate) => {
     isLoading.value = false;
   }
 };
+
+// Fetch barber performance data from Supabase
+
+// Fetch barber performance data from Supabase
+const fetchBarberPerformance = async (startDate, endDate) => {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    const startStr = formatDateForQuery(start);
+    const endStr = formatDateForQuery(end);
+    
+    console.group('Barber Performance Data Fetch');
+    console.log('Fetching data for dates between:', startStr, 'and', endStr);
+    
+    // Query the view created for barber revenue summary
+    const { data, error: supabaseError } = await supabase
+  .from('barbershop_barber_revenue_summary')
+  .select('barber_name, total_revenue, visit_date')
+  .gte('visit_date', startStr)
+  .lte('visit_date', endStr);
+    
+    console.log('Raw Supabase Query Result:', {
+      startStr,
+      endStr,
+      supabaseError,
+      dataLength: data ? data.length : 'No data',
+      dataFirstRow: data ? data[0] : 'No data'
+    });
+
+    if (supabaseError) {
+      console.error('Supabase Error:', supabaseError);
+      throw supabaseError;
+    }
+    
+    if (!data || data.length === 0) {
+      console.warn('No data found in the selected date range');
+      console.groupEnd();
+      return [];
+    }
+
+    // Aggregate data by barber
+    const barberMap = data.reduce((acc, item) => {
+      const { barber_name, total_revenue } = item;
+      if (!acc[barber_name]) acc[barber_name] = 0;
+      acc[barber_name] += total_revenue;
+      return acc;
+    }, {});
+
+    // Convert to chart-ready format
+    const formattedData = Object.entries(barberMap)
+      .filter(([_, value]) => value > 0)
+      .map(([name, value]) => ({
+        name,
+        value
+      }))
+      .sort((a, b) => b.value - a.value);
+    
+    console.log('Processed Barber Performance Data:', formattedData);
+    console.groupEnd();
+    
+    return formattedData;
+    
+  } catch (err) {
+    console.error('Comprehensive Error in Barber Performance Fetch:', err);
+    console.groupEnd();
+    return [];
+  }
+};
+
 // Create empty entries for each day in the date range
 const createEmptyDateRange = (startDate, endDate) => {
   const data = [];
@@ -293,6 +374,7 @@ const retryFetch = async () => {
   if (dateRange.value && dateRange.value.length === 2) {
     const [start, end] = dateRange.value;
     chartData.value = await fetchDataFromSupabase(start, end);
+    barberPerformanceData.value = await fetchBarberPerformance(start, end);
   }
 };
 
@@ -316,19 +398,25 @@ const formattedAverage = computed(() => formatCurrency(averagePerVisit.value));
 watch(dateRange, async ([start, end]) => {
   if (!start || !end) return;
   
+  isLoading.value = true;
+  
+  // Fetch both datasets
   chartData.value = await fetchDataFromSupabase(start, end);
+  barberPerformanceData.value = await fetchBarberPerformance(start, end);
+  
+  isLoading.value = false;
 }, { immediate: true });
 
 // Fetch initial data on component mount
 onMounted(() => {
-  // Set default range to include the last 3 days
+  // Set default range to include the last 7 days
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const sevenDaysAgo = new Date(today);
-  sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days (including today)
+  sevenDaysAgo.setDate(today.getDate() - 6);
   
   dateRange.value = [sevenDaysAgo, today];
-  activeOption.value = "Last 7 Days"; // Or change to "Last 3 Days" if you add that option
+  activeOption.value = "Last 7 Days";
 });
 </script>
 
@@ -495,6 +583,10 @@ onMounted(() => {
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.5rem;
+  // border: solid red;
+  height: fit-content;
+  // overflow: hidden;
+
   
   &__title {
     font-size: 1.125rem;
@@ -502,6 +594,9 @@ onMounted(() => {
     margin-bottom: 1rem;
     color: #2c3e50;
   }
+}
+.barber-chart-wrapper {
+  height: 40rem;
 }
 
 .data-table-wrapper {
